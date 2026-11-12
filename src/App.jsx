@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
-import DashboardLayout from './components/layout/DashboardLayout.jsx'
+import AdminBookings from './pages/AdminBookings.jsx'
 import AdminSpots from './pages/AdminSpots.jsx'
 import MyBookings from './pages/MyBookings.jsx'
 import './App.css'
@@ -130,17 +130,7 @@ function App() {
         <Route path="/" element={<StarterPage />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/admin/spots" element={<AdminSpots />} />
-        <Route
-          path="/admin/bookings"
-          element={(
-            <DashboardLayout>
-              <main style={{ maxWidth: 960, margin: '0 auto', padding: '56px 32px' }}>
-                <h1 style={{ fontSize: 32, marginBottom: 8 }}>Manage Bookings</h1>
-                <p>Booking management is coming soon.</p>
-              </main>
-            </DashboardLayout>
-          )}
-        />
+        <Route path="/admin/bookings" element={<AdminBookings />} />
       </Routes>
     </BrowserRouter>
   )
