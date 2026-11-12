@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
+import MyBookings from './pages/MyBookings.jsx'
 import './App.css'
 
-function App() {
+function StarterPage() {
   const [count, setCount] = useState(0)
 
   return (
@@ -116,6 +118,17 @@ function App() {
       <div className="ticks"></div>
       <section id="spacer"></section>
     </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<StarterPage />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
