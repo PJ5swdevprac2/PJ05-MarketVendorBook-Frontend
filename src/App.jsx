@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
@@ -7,12 +7,17 @@ import AdminBookings from './pages/AdminBookings.jsx'
 import AdminSpots from './pages/AdminSpots.jsx'
 import MyBookings from './pages/MyBookings.jsx'
 import './App.css'
+import Navbar from './components/Navbar.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Home from './pages/public/Home.jsx'
+import Login from './pages/public/Login.jsx'
+import Register from './pages/public/Register.jsx'
 
 function StarterPage() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
+    <div className="starter">
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -119,21 +124,54 @@ function StarterPage() {
 
       <div className="ticks"></div>
       <section id="spacer"></section>
-    </>
+    </div>
   )
 }
 
 function App() {
   return (
-    <BrowserRouter>
+    <div className="min-h-screen bg-white font-sans text-black [color-scheme:light]">
+      <Navbar />
       <Routes>
-        <Route path="/" element={<StarterPage />} />
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/admin/spots" element={<AdminSpots />} />
-        <Route path="/admin/bookings" element={<AdminBookings />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/starter" element={<StarterPage />} />
+        <Route
+          path="/my-bookings"
+          element={
+            <ProtectedRoute role="member">
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/spots"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminSpots />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Placeholder title="Page not found" />} />
       </Routes>
-    </BrowserRouter>
+    </div>
   )
 }
 
 export default App
+
+const Placeholder = ({ title }) => (
+  <main className="mx-auto max-w-6xl px-4 py-16 text-center">
+    <h1 className="text-3xl font-semibold text-black">{title}</h1>
+    <p className="mt-2 text-sm text-slate-500">Coming soon (Dev 2).</p>
+  </main>
+)
