@@ -7,6 +7,7 @@ import {
   updateBooking,
 } from '../api/bookingApi';
 import { getAllSpots } from '../api/spotApi';
+import DashboardLayout from '../components/layout/DashboardLayout';
 import BookingForm from '../components/booking/BookingForm';
 import BookingHistoryTable from '../components/booking/BookingHistoryTable';
 import {
@@ -202,7 +203,8 @@ export default function MyBookings() {
   }
 
   return (
-    <main className="my-bookings-page">
+    <DashboardLayout>
+      <main className="my-bookings-page">
       <style>{`
         .my-bookings-page {
           --booking-ink: #0f172a;
@@ -316,6 +318,7 @@ export default function MyBookings() {
         onEdit={handleEdit}
         onDeleteBooking={handleDelete}
       />
-    </main>
+      </main>
+    </DashboardLayout>
   );
 }
