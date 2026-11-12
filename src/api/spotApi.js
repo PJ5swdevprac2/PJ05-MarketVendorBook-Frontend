@@ -36,19 +36,19 @@ export function getAllSpots() {
     });
   }
 
-  return axiosClient.get('/spots').then(({ data }) => data);
+  return axiosClient.get('/spots').then(({ data }) => data.data);
 }
 
 export const getSpots = getAllSpots;
 
 export function createSpot(spotData) {
-  return axiosClient.post('/spots', spotData).then(({ data }) => data);
+  return axiosClient.post('/spots', spotData).then(({ data }) => data.data);
 }
 
 export function updateSpot(spotId, spotData) {
-  return axiosClient.put(`/spots/${spotId}`, spotData).then(({ data }) => data);
+  return axiosClient.put(`/spots/${spotId}`, spotData).then(({ data }) => data.data);
 }
 
 export function deleteSpot(spotId) {
-  return axiosClient.delete(`/spots/${spotId}`).then(({ data }) => data);
+  return axiosClient.delete(`/spots/${spotId}`).then(({ data }) => data.data);
 }
