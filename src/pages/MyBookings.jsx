@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   createBooking,
@@ -45,6 +45,7 @@ export default function MyBookings() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [deletingBookingId, setDeletingBookingId] = useState('');
+  const formSectionRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -96,6 +97,10 @@ export default function MyBookings() {
   function handleFormChange(event) {
     const { name, value } = event.currentTarget;
     setFormData((current) => ({ ...current, [name]: value }));
+  }
+
+  function handleProductTypeSelect(productType) {
+    setFormData((current) => ({ ...current, productType }));
   }
 
   async function handleSubmit(event) {
@@ -164,6 +169,17 @@ export default function MyBookings() {
     });
   }
 
+  function handleNewBooking() {
+    handleCancelEdit();
+    formSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const spotSelector = formSectionRef.current?.querySelector('#booking-spot');
+    if (spotSelector) {
+      spotSelector.focus({ preventScroll: true });
+    } else {
+      formSectionRef.current?.focus({ preventScroll: true });
+    }
+  }
+
   async function handleDelete(booking) {
     if (!window.confirm('Permanently delete this booking?')) {
       return;
@@ -189,98 +205,105 @@ export default function MyBookings() {
     <main className="my-bookings-page">
       <style>{`
         .my-bookings-page {
-          --booking-ink: #17211b;
-          --booking-muted: #65736a;
-          --booking-green: #246b45;
-          --booking-border: #dce5dd;
+          --booking-ink: #0f172a;
+          --booking-muted: #64748b;
+          --booking-border: #e2e8f0;
+          --booking-black: #050505;
           width: min(1120px, 100%);
           margin: 0 auto;
-          padding: 48px 28px 64px;
+          padding: 38px 36px 64px;
           box-sizing: border-box;
           color: var(--booking-ink);
-          text-align: left;
-          font: 16px/1.5 system-ui, 'Segoe UI', sans-serif;
+          font: 15px/1.5 Inter, ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
         }
-        .my-bookings-page * { box-sizing: border-box; }
-        .bookings-header { margin-bottom: 28px; }
-        .bookings-eyebrow {
-          color: var(--booking-green);
-          font-size: 13px;
-          font-weight: 700;
-          letter-spacing: .12em;
-          text-transform: uppercase;
-        }
-        .bookings-header h1 {
-          margin: 6px 0 4px;
-          color: var(--booking-ink);
-          font-size: clamp(30px, 5vw, 42px);
-          letter-spacing: -.04em;
-          line-height: 1.15;
-        }
-        .bookings-header p, .bookings-muted { color: var(--booking-muted); }
-        .booking-panel {
-          margin: 24px 0;
-          padding: 24px;
-          border: 1px solid var(--booking-border);
-          border-radius: 14px;
-          background: #fff;
-          box-shadow: 0 8px 24px rgba(25, 54, 35, .05);
-        }
-        .booking-panel h2 {
-          margin: 0 0 18px;
-          color: var(--booking-ink);
-          font-size: 21px;
-          font-weight: 700;
-        }
-        .bookings-message {
-          padding: 22px 12px;
-          color: var(--booking-muted);
+        .bookings-header {
+          padding: 4px 0 34px;
           text-align: center;
         }
+        .bookings-header h1 {
+          margin: 0 0 9px;
+          color: var(--booking-ink);
+          font-size: clamp(30px, 4vw, 38px);
+          font-weight: 750;
+          letter-spacing: -.035em;
+          line-height: 1.15;
+        }
+        .bookings-header p {
+          color: #334155;
+          font-size: 14px;
+        }
+        .bookings-action-row {
+          display: flex;
+          justify-content: center;
+          margin-top: 20px;
+        }
         .booking-button {
-          min-height: 40px;
-          padding: 8px 15px;
-          border: 1px solid transparent;
+          min-height: 42px;
+          padding: 9px 22px;
+          border: 1px solid #cbd5e1;
           border-radius: 8px;
           cursor: pointer;
           font: inherit;
-          font-weight: 650;
+          font-size: 14px;
+          font-weight: 600;
         }
         .booking-button:disabled { cursor: wait; opacity: .6; }
-        .booking-button-primary { background: var(--booking-green); color: #fff; }
+        .booking-button-primary {
+          border-color: var(--booking-black);
+          background: var(--booking-black);
+          color: #fff;
+        }
         .booking-button-secondary {
-          border-color: var(--booking-border);
           background: #fff;
           color: var(--booking-ink);
         }
         .booking-button-text {
-          min-height: auto;
-          padding: 5px 8px;
-          background: transparent;
-          color: var(--booking-green);
+          min-height: 32px;
+          padding: 5px 11px;
+          background: #fff;
+          color: var(--booking-ink);
+          font-size: 13px;
         }
-        .booking-button-danger { color: #a32e2e; }
+        .booking-button-danger {
+          border-color: #fecaca;
+          background: #fff7f7;
+          color: #b42318;
+        }
+        .bookings-message {
+          padding: 28px 12px;
+          color: var(--booking-muted);
+          text-align: center;
+        }
         @media (max-width: 760px) {
-          .my-bookings-page { padding: 30px 16px 48px; }
-          .booking-panel { padding: 18px 14px; }
+          .my-bookings-page { padding: 28px 18px 48px; }
+          .bookings-header { padding-bottom: 26px; }
         }
       `}</style>
 
       <header className="bookings-header">
-        <span className="bookings-eyebrow">Vendor account</span>
         <h1>My Bookings</h1>
-        <p>Book a market spot and keep track of your upcoming dates.</p>
+        <p>Review your booking history, update details, or cancel upcoming bookings.</p>
+        <div className="bookings-action-row">
+          <button
+            className="booking-button booking-button-primary"
+            type="button"
+            onClick={handleNewBooking}
+          >
+            New Booking
+          </button>
+        </div>
       </header>
 
       <BookingForm
+        formSectionRef={formSectionRef}
         spots={spots}
         formData={formData}
-        editingBookingId={editingBookingId}
         submitting={submitting}
         loading={loading}
         errorMessage={errorMessage}
         today={today}
         onChange={handleFormChange}
+        onProductTypeSelect={handleProductTypeSelect}
         onSubmit={handleSubmit}
         onCancelEdit={handleCancelEdit}
       />

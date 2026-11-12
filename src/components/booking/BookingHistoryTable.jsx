@@ -5,16 +5,6 @@ import {
   getSpotId,
 } from '../../utils/bookingValidation';
 
-function formatSpot(spot) {
-  if (!spot) {
-    return 'Spot no longer available';
-  }
-
-  const number = spot.spotNumber ? `Spot ${spot.spotNumber}` : `Spot ${getSpotId(spot)}`;
-  const details = [spot.zone, spot.spotSize].filter(Boolean).join(' · ');
-  return details ? `${number} — ${details}` : number;
-}
-
 function StarterMessage({ children }) {
   return <p className="bookings-message">{children}</p>;
 }
@@ -31,40 +21,88 @@ export default function BookingHistoryTable({
   return (
     <>
       <style>{`
-        .booking-table-wrap { overflow-x: auto; }
+        .booking-history-panel { padding-top: 26px; }
+        .booking-history-heading { margin-bottom: 17px; }
+        .booking-history-heading h2 {
+          margin: 0 0 8px;
+          color: var(--booking-ink);
+          font-size: clamp(24px, 3vw, 29px);
+          font-weight: 750;
+          letter-spacing: -.025em;
+        }
+        .booking-history-heading p {
+          color: #334155;
+          font-size: 14px;
+        }
+        .booking-table-wrap {
+          overflow-x: auto;
+          border: 1px solid var(--booking-border);
+          border-radius: 8px;
+          background: #fff;
+        }
         .booking-table {
           width: 100%;
           border-collapse: collapse;
           text-align: left;
         }
         .booking-table th, .booking-table td {
-          padding: 13px 12px;
-          border-bottom: 1px solid #e8eee9;
+          padding: 13px 15px;
+          border-bottom: 1px solid #e2e8f0;
           vertical-align: middle;
         }
         .booking-table th {
-          color: var(--booking-muted);
+          background: #f8fafc;
+          color: #334155;
           font-size: 12px;
-          font-weight: 700;
-          letter-spacing: .06em;
-          text-transform: uppercase;
+          font-weight: 600;
           white-space: nowrap;
         }
-        .booking-table td { color: var(--booking-ink); }
-        .booking-spot-name { font-weight: 650; }
-        .booking-spot-details {
-          display: block;
-          color: var(--booking-muted);
+        .booking-table td {
+          color: #475569;
           font-size: 13px;
         }
-        .booking-actions { white-space: nowrap; }
-        @media (max-width: 760px) {
-          .booking-table { min-width: 760px; }
+        .booking-table tbody tr:last-child td { border-bottom: 0; }
+        .booking-table tbody tr:hover { background: #fbfdff; }
+        .booking-id-cell {
+          color: #0f172a !important;
+          font-weight: 650;
+          white-space: nowrap;
+        }
+        .booking-actions {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 8px;
+          white-space: nowrap;
+        }
+        .booking-history-action {
+          min-height: 31px;
+          padding: 4px 11px;
+          border: 1px solid #cbd5e1;
+          border-radius: 5px;
+          background: #fff;
+          color: #1e293b;
+          cursor: pointer;
+          font: inherit;
+          font-size: 12px;
+        }
+        .booking-history-action:disabled { cursor: wait; opacity: .6; }
+        .booking-history-cancel {
+          border-color: #fecaca;
+          background: #fff7f7;
+          color: #b42318;
+        }
+        @media (max-width: 700px) {
+          .booking-table { min-width: 680px; }
+          .booking-table th, .booking-table td { padding: 11px 12px; }
         }
       `}</style>
 
-      <section className="booking-panel" aria-labelledby="booking-history-heading">
-        <h2 id="booking-history-heading">Booking history</h2>
+      <section className="booking-history-panel" aria-labelledby="booking-history-heading">
+        <div className="booking-history-heading">
+          <h2 id="booking-history-heading">Booking History</h2>
+          <p>Table view of your past and upcoming bookings.</p>
+        </div>
+
         {loading ? (
           <StarterMessage>Loading booking history…</StarterMessage>
         ) : bookings.length === 0 ? (
@@ -75,7 +113,7 @@ export default function BookingHistoryTable({
               <thead>
                 <tr>
                   <th scope="col">Booking ID</th>
-                  <th scope="col">Spot info</th>
+                  <th scope="col">Spot Number</th>
                   <th scope="col">Booking Date</th>
                   <th scope="col">Product Type</th>
                   <th scope="col">Actions</th>
@@ -91,32 +129,29 @@ export default function BookingHistoryTable({
 
                   return (
                     <tr key={bookingId}>
-                      <td>{bookingId || '—'}</td>
-                      <td>
-                        <span className="booking-spot-name">{formatSpot(spot)}</span>
-                        {spot?.locationDescription && (
-                          <span className="booking-spot-details">{spot.locationDescription}</span>
-                        )}
-                      </td>
+                      <td className="booking-id-cell">{bookingId || '—'}</td>
+                      <td>{spot?.spotNumber || '—'}</td>
                       <td>{getBookingDateOnly(booking.bookingDate) || '—'}</td>
                       <td>{booking.productType || '—'}</td>
-                      <td className="booking-actions">
-                        <button
-                          className="booking-button booking-button-text"
-                          type="button"
-                          onClick={() => onEdit(booking)}
-                          disabled={submitting || Boolean(deletingBookingId)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="booking-button booking-button-text booking-button-danger"
-                          type="button"
-                          onClick={() => onDeleteBooking(booking)}
-                          disabled={deletingBookingId === bookingId || submitting}
-                        >
-                          {deletingBookingId === bookingId ? 'Deleting…' : 'Delete'}
-                        </button>
+                      <td>
+                        <div className="booking-actions">
+                          <button
+                            className="booking-history-action"
+                            type="button"
+                            onClick={() => onEdit(booking)}
+                            disabled={submitting || Boolean(deletingBookingId)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="booking-history-action booking-history-cancel"
+                            type="button"
+                            onClick={() => onDeleteBooking(booking)}
+                            disabled={deletingBookingId === bookingId || submitting}
+                          >
+                            {deletingBookingId === bookingId ? 'Cancelling…' : 'Cancel'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
