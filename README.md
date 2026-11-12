@@ -1,78 +1,75 @@
-# Night Market Vendor Spot Booking System - Frontend
+# Night Market Vendor Spot Booking System
 
-Welcome to the frontend repository for the Night Market Vendor Spot Booking System. This application provides a seamless platform for vendors (Members) to reserve marketplace spots and enables administrators (Admins) to manage spots, bookings, and user access efficiently.
+## Project Overview
 
-## 🛠 Tech Stack
+The Night Market Vendor Spot Booking System frontend lets vendors browse market
+spots and manage bookings, while providing separate experiences for members
+and administrators. It is built with **React**, **Vite**, **Tailwind CSS**, and
+**Axios**, and connects to the PJ05 Backend REST API.
 
-This project is built using modern web development technologies to ensure performance, maintainability, and a smooth developer experience:
+## Prerequisites & Backend Connection
 
-* **Framework:** [React 18](https://react.dev/) powered by [Vite](https://vitejs.dev/) for rapid development and HMR.
-* **Routing:** [React Router v6](https://reactrouter.com/) for declarative routing and protected route management.
-* **HTTP Client:** [Axios](https://axios-http.com/) configured with interceptors for seamless JWT authentication handling.
-* **Styling:** Tailwind CSS for utility-first, responsive design.
+- Node.js 20.19+ or 22.12+ and npm.
+- Run the PJ05 Backend API at `http://localhost:5000`. The frontend API base
+  URL is `http://localhost:5000/api/v1`.
+- The backend's default CORS origin (`FRONTEND_URL`) is
+  `http://localhost:3000`; run the frontend on port 3000.
+- Protected API requests use `Authorization: Bearer <token>`. The frontend
+  stores the JWT in `localStorage`; the backend does not authenticate from
+  cookies.
 
-## 🚀 Getting Started
+## Installation & Running
 
-Follow these instructions to set up the project on your local machine for development and testing.
-
-### Prerequisites
-
-Ensure you have the following installed:
-
-* [Node.js](https://nodejs.org/) (v16.x or higher recommended)
-* npm (comes with Node.js) or yarn
-
-### 1. Clone the Repository
-
-```bash
-git clone <repository_url>
-cd PJ05-MarketVendorBook-Frontend
-```
-
-### 2. Install Dependencies
+From the frontend project directory:
 
 ```bash
 npm install
+npm run dev -- --port 3000
 ```
 
-### 3. Environment Configuration
+Open [http://localhost:3000](http://localhost:3000). The extra `--port 3000`
+ensures Vite uses the origin allowed by the backend. Running `npm run dev`
+without a port option uses Vite's default port, which may not match the
+backend's CORS configuration.
 
-To connect the frontend to the backend API, you need to set up your local environment variables.
+## Key Features & Roles
 
-1. **Copy the example file:** In the root directory (alongside `package.json`), duplicate the `.env.example` file and rename the copy to `.env`.
-   *(If you are using a terminal, you can run: `cp .env.example .env`)*
-2. **Configure the API URL:** Open the newly created `.env` file and ensure the `VITE_API_BASE_URL` matches the port where your local backend is running (e.g., port 3000, 8080, etc.).
+### Public / Auth
 
-```env
-# Example content of .env
-VITE_API_BASE_URL=http://localhost:3000/api
-```
+- Register and log in as a member or admin.
+- Keep the JWT bearer token in the client session and clear it on logout.
+- Browse vendor spots on the Home page. The current Home page uses sample spot
+  data; the public `GET /api/v1/spots` endpoint and `spotApi` service are
+  available for active backend spots.
 
-*(Note: The `.env` file is included in `.gitignore` by default. Never commit real credentials or production tokens to the repository.)*
+### Member — `/my-bookings`
 
-### 4. Start the Development Server
+The protected member page uses the spot and booking APIs to create, view, edit,
+and cancel bookings. Cancellation permanently deletes the booking.
 
-```bash
-npm run dev
-```
+- Booking dates use UTC `YYYY-MM-DD` values and cannot be in the past.
+- A member can book at most 3 spots per UTC day.
+- A member cannot book the same spot twice on the same day, and an occupied
+  spot cannot be booked by another member for that day.
+- `productType` is non-empty free text.
 
-The Vite server will start, typically running on `http://localhost:5173`. Open this URL in your browser to view the application.
+### Admin — `/admin/spots` and `/admin/bookings`
 
-## 📂 Project Structure
+The backend permits admins to create, view, update, and soft-delete spots, and
+to view, edit, and permanently delete member bookings. Admins cannot create
+bookings. The frontend routes are protected, but the current Admin pages still
+show “Coming soon” placeholders; the API service functions are available for
+these operations.
 
-To maintain clean architecture, the `src/` directory is organized by functionality:
+## Project Structure
 
 ```text
 src/
- ├── api/               # API service layers categorized by domain (e.g., authApi.js, spotApi.js)
- ├── assets/            # Static assets like images, icons, and global stylesheets
- ├── components/        # Reusable UI components (e.g., Buttons, Modals, Navbar, Cards)
- ├── contexts/          # React Context providers (e.g., AuthContext for global state)
- ├── pages/             # Route-level components (Views)
- │   ├── admin/         # Admin-specific views (Dashboard, Spot Management)
- │   ├── public/        # Publicly accessible views (Home, Login, Register)
- │   └── user/          # Member-specific views (My Bookings)
- ├── utils/             # Helper functions and utilities (e.g., date formatting, validation)
- ├── App.jsx            # Root component encompassing routing and layout
- └── main.jsx           # Application entry point rendering into the DOM
+├── api/                 # Axios client and auth, spot, and booking services
+├── components/          # Shared UI, auth, navigation, and booking components
+├── contexts/            # Authentication context and provider
+├── pages/               # Route-level pages: public pages and My Bookings
+├── utils/               # Booking validation and helpers
+├── App.jsx              # Application routes and global layout
+└── main.jsx             # React entry point, router, and AuthProvider
 ```
