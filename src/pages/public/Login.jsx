@@ -34,11 +34,12 @@ export default function Login() {
     setServerError("");
     try {
       const res = await loginUser(form);
-      const { token, user } = res.data ?? res;
+      const payload = res.data ?? res;
+      const { token, ...user } = payload;
       saveSession(token, user);
       navigate(location.state?.from ?? (user.role === "admin" ? "/admin/spots" : "/"), { replace: true });
     } catch (err) {
-      setServerError(err.response?.data?.message || "Email or password is incorrect.");
+      setServerError(err.response?.data?.error || err.response?.data?.message || "Email or password is incorrect.");
     } finally {
       setBusy(false);
     }

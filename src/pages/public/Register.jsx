@@ -39,7 +39,7 @@ export default function Register() {
       await registerUser({ name, email, tel, password, role: "member" });
       navigate("/login", { state: { registered: true } });
     } catch (err) {
-      setServerError(err.response?.data?.message || "Could not create your account. Try again.");
+      setServerError(err.response?.data?.error || err.response?.data?.message || "Could not create your account. Try again.");
     } finally {
       setBusy(false);
     }
