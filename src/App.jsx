@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
+import AdminBookings from './pages/AdminBookings.jsx'
+import AdminSpots from './pages/AdminSpots.jsx'
 import MyBookings from './pages/MyBookings.jsx'
 import './App.css'
 import Navbar from './components/Navbar.jsx'
@@ -147,7 +149,7 @@ function App() {
           path="/admin/spots"
           element={
             <ProtectedRoute role="admin">
-              <Placeholder title="Manage Spots" />
+              <AdminSpots />
             </ProtectedRoute>
           }
         />
@@ -155,7 +157,7 @@ function App() {
           path="/admin/bookings"
           element={
             <ProtectedRoute role="admin">
-              <Placeholder title="Manage Bookings" />
+              <AdminBookings />
             </ProtectedRoute>
           }
         />
