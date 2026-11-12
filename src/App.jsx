@@ -1,14 +1,21 @@
 import { useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import './App.css'
+import Navbar from './components/Navbar.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Home from './pages/public/Home.jsx'
+import Login from './pages/public/Login.jsx'
+import Register from './pages/public/Register.jsx'
 
-function App() {
+// Original Vite starter page - kept, now available at /starter
+function Starter() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
+    <div className="starter">
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -115,7 +122,63 @@ function App() {
 
       <div className="ticks"></div>
       <section id="spacer"></section>
-    </>
+    </div>
+  )
+}
+
+// TODO (Dev 2): replace these placeholders with the real pages
+// import MyBookings from './pages/user/MyBookings.jsx'
+// import AdminSpots from './pages/admin/AdminSpots.jsx'
+// import AdminBookings from './pages/admin/AdminBookings.jsx'
+const Placeholder = ({ title }) => (
+  <main className="mx-auto max-w-6xl px-4 py-16 text-center">
+    <h1 className="text-3xl font-semibold text-black">{title}</h1>
+    <p className="mt-2 text-sm text-slate-500">Coming soon (Dev 2).</p>
+  </main>
+)
+
+function App() {
+  return (
+    <div className="min-h-screen bg-white font-sans text-black [color-scheme:light]">
+      <Navbar />
+      <Routes>
+        {/* Public (Dev 1) */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/starter" element={<Starter />} />
+
+        {/* Member (Dev 2) */}
+        <Route
+          path="/my-bookings"
+          element={
+            <ProtectedRoute role="member">
+              <Placeholder title="My Bookings" />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin (Dev 2) */}
+        <Route
+          path="/admin/spots"
+          element={
+            <ProtectedRoute role="admin">
+              <Placeholder title="Manage Spots" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute role="admin">
+              <Placeholder title="Manage Bookings" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Placeholder title="Page not found" />} />
+      </Routes>
+    </div>
   )
 }
 
