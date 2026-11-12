@@ -79,7 +79,7 @@ function validateBooking(booking, existingBookings) {
   }
 }
 
-export function getBookings() {
+function loadBookings() {
   if (useMockData) {
     return new Promise((resolve) => {
       setTimeout(() => resolve([...mockBookings]), 500);
@@ -88,6 +88,16 @@ export function getBookings() {
 
   return axiosClient.get('/bookings').then(({ data }) => data);
 }
+
+export function getMyBookings() {
+  return loadBookings();
+}
+
+export function getAllBookings() {
+  return loadBookings();
+}
+
+export const getBookings = getMyBookings;
 
 export async function createBooking(bookingData) {
   if (useMockData) {
@@ -111,23 +121,23 @@ export async function createBooking(bookingData) {
   return data;
 }
 
-export function updateBooking(id, bookingData) {
+export function updateBooking(bookingId, updateData) {
   if (useMockData) {
-    const index = mockBookings.findIndex((booking) => booking.id === id);
+    const index = mockBookings.findIndex((booking) => booking.id === bookingId);
     if (index === -1) {
       throw new Error('ไม่พบข้อมูลการจองที่ต้องการแก้ไข');
     }
 
-    mockBookings[index] = { ...mockBookings[index], ...bookingData };
+    mockBookings[index] = { ...mockBookings[index], ...updateData };
     return Promise.resolve(mockBookings[index]);
   }
 
-  return axiosClient.put(`/bookings/${id}`, bookingData).then(({ data }) => data);
+  return axiosClient.put(`/bookings/${bookingId}`, updateData).then(({ data }) => data);
 }
 
-export function deleteBooking(id) {
+export function deleteBooking(bookingId) {
   if (useMockData) {
-    const index = mockBookings.findIndex((booking) => booking.id === id);
+    const index = mockBookings.findIndex((booking) => booking.id === bookingId);
     if (index === -1) {
       throw new Error('ไม่พบข้อมูลการจองที่ต้องการลบ');
     }
@@ -136,5 +146,5 @@ export function deleteBooking(id) {
     return Promise.resolve(deletedBooking);
   }
 
-  return axiosClient.delete(`/bookings/${id}`).then(({ data }) => data);
+  return axiosClient.delete(`/bookings/${bookingId}`).then(({ data }) => data);
 }

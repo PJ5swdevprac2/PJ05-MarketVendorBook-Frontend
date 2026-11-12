@@ -29,7 +29,7 @@ const mockSpots = [
 
 const useMockData = import.meta.env.VITE_USE_MOCK === 'true';
 
-export function getSpots() {
+export function getAllSpots() {
   if (useMockData) {
     return new Promise((resolve) => {
       setTimeout(() => resolve(mockSpots), 500);
@@ -39,14 +39,16 @@ export function getSpots() {
   return axiosClient.get('/spots').then(({ data }) => data);
 }
 
+export const getSpots = getAllSpots;
+
 export function createSpot(spotData) {
   return axiosClient.post('/spots', spotData).then(({ data }) => data);
 }
 
-export function updateSpot(id, spotData) {
-  return axiosClient.put(`/spots/${id}`, spotData).then(({ data }) => data);
+export function updateSpot(spotId, spotData) {
+  return axiosClient.put(`/spots/${spotId}`, spotData).then(({ data }) => data);
 }
 
-export function deleteSpot(id) {
-  return axiosClient.delete(`/spots/${id}`).then(({ data }) => data);
+export function deleteSpot(spotId) {
+  return axiosClient.delete(`/spots/${spotId}`).then(({ data }) => data);
 }
