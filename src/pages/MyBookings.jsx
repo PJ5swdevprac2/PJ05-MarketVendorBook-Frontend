@@ -47,6 +47,7 @@ export default function MyBookings() {
   const [submitting, setSubmitting] = useState(false);
   const [deletingBookingId, setDeletingBookingId] = useState('');
   const formSectionRef = useRef(null);
+  const bookingHistoryRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -141,6 +142,9 @@ export default function MyBookings() {
         spot: preselectedSpotId == null ? '' : String(preselectedSpotId),
         bookingDate: '',
         productType: '',
+      });
+      requestAnimationFrame(() => {
+        bookingHistoryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -310,6 +314,7 @@ export default function MyBookings() {
         onCancelEdit={handleCancelEdit}
       />
       <BookingHistoryTable
+        historySectionRef={bookingHistoryRef}
         bookings={bookings}
         spots={spots}
         loading={loading}

@@ -11,6 +11,7 @@ const links = [
 export default function Navbar() {
   const { user, clearSession } = useAuth();
   const navigate = useNavigate();
+  const roleLabel = user?.role === "admin" ? "Admin account" : "User account";
 
   const logout = () => {
     clearSession();
@@ -45,8 +46,22 @@ export default function Navbar() {
               >
                 {user.role === "admin" ? "Admin" : "My Bookings"}
               </NavLink>
+              <span
+                className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+                  user.role === "admin"
+                    ? "bg-violet-100 text-violet-800"
+                    : "bg-slate-100 text-slate-700"
+                }`}
+                aria-label={`Current role: ${roleLabel}`}
+              >
+                {roleLabel}
+              </span>
               <span className="hidden text-sm text-slate-500 sm:inline">{user.name}</span>
-              <button onClick={logout} className="h-9 rounded-md border border-gray-300 bg-white px-4 text-sm font-medium text-black hover:bg-gray-50">
+              <button
+                type="button"
+                onClick={logout}
+                className="h-10 shrink-0 whitespace-nowrap rounded-md border border-gray-300 bg-white px-4 text-base font-medium text-black hover:bg-gray-50"
+              >
                 Log out
               </button>
             </>
