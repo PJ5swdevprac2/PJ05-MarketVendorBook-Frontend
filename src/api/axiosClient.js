@@ -21,7 +21,8 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const isLoginRequest = error.config?.url?.includes('/auth/login');
-    if (error.response?.status === 401 && !isLoginRequest) {
+    const isLogoutRequest = error.config?.url?.includes('/auth/logout');
+    if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       if (window.location.pathname !== '/login') {

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { logoutUser } from "../api/authApi";
 import { useAuth } from "../contexts/useAuth";
 
 const links = [
@@ -11,14 +13,26 @@ const links = [
 export default function Navbar() {
   const { user, clearSession } = useAuth();
   const navigate = useNavigate();
+  const [logoutError, setLogoutError] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   const roleLabel = user?.role === "admin" ? "Admin account" : "User account";
 
-  const logout = () => {
-    clearSession();
-    navigate("/");
+  const logout = async () => {
+    setLogoutError("");
+    setLoggingOut(true);
+    try {
+      await logoutUser();
+    } catch {
+      setLogoutError("You’re signed out on this device, but we couldn’t confirm logout with the server. Close the browser if this is a shared device.");
+    } finally {
+      clearSession();
+      navigate("/");
+      setLoggingOut(false);
+    }
   };
 
   return (
+    <>
     <header className="sticky top-0 z-30 border-b border-gray-100 bg-white shadow-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-3">
@@ -60,9 +74,10 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={logout}
-                className="h-10 shrink-0 whitespace-nowrap rounded-md border border-gray-300 bg-white px-4 text-base font-medium text-black hover:bg-gray-50"
+                disabled={loggingOut}
+                className="h-10 shrink-0 whitespace-nowrap rounded-md border border-gray-300 bg-white px-4 text-base font-medium text-black hover:bg-gray-50 disabled:cursor-wait disabled:opacity-60"
               >
-                Log out
+                {loggingOut ? "Logging out…" : "Log out"}
               </button>
             </>
           ) : (
@@ -73,5 +88,11 @@ export default function Navbar() {
         </div>
       </div>
     </header>
+    {logoutError && (
+      <p className="mx-auto max-w-6xl px-4 py-2 text-sm text-red-700" role="alert">
+        {logoutError}
+      </p>
+    )}
+    </>
   );
 }

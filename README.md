@@ -15,7 +15,8 @@ spots and bookings. It is built with **React**, **Vite**, **Tailwind CSS**, and
 - The backend allows `http://localhost:3000` in development; its production
   origin is configured with `FRONTEND_URL`.
 - Protected API requests use `Authorization: Bearer <token>`. The frontend
-  stores the JWT in `localStorage`; backend authentication does not use cookies.
+  stores the JWT in `localStorage`; bearer tokens, not cookies, authenticate
+  protected API requests. Logout also calls the backend to clear its cookie.
 
 ## Installation & Running
 
@@ -36,8 +37,10 @@ already occupied rather than silently switching to a CORS-blocked port.
 
 - Public registration creates User/member accounts. Admin accounts are created
   with the backend's one-time setup command.
+- Successful registration stores the returned token and signs the new user in.
 - The navigation bar shows the role of the currently logged-in account.
-- Logout clears the local authentication state and stored bearer token.
+- Logout asks the backend to clear its cookie, then clears the local account
+  state and bearer token.
 - Browse active backend vendor spots on the Home page through
   `GET /api/v1/spots`.
 
