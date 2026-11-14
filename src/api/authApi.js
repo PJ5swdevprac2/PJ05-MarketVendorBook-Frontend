@@ -1,7 +1,7 @@
 // Owner: Dev 1
 import axiosClient from './axiosClient'
 
-// userData: { name, email, tel, password, role }
+// Returns the response body, including `data: { id, role, token, ... }`.
 export const registerUser = async (userData) => {
   const res = await axiosClient.post('/auth/register', userData)
   return res.data
@@ -13,9 +13,7 @@ export const loginUser = async (credentials) => {
   return res.data
 }
 
-// Clears localStorage only. In components use useAuth().clearSession()
-// so React state updates too.
-export const logoutUser = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
+export const logoutUser = async () => {
+  const res = await axiosClient.get('/auth/logout', { withCredentials: true })
+  return res.data
 }

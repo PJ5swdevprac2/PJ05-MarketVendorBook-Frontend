@@ -10,6 +10,7 @@ function StarterMessage({ children }) {
 }
 
 export default function BookingHistoryTable({
+  historySectionRef,
   bookings,
   spots,
   loading,
@@ -21,7 +22,7 @@ export default function BookingHistoryTable({
   return (
     <>
       <style>{`
-        .booking-history-panel { padding-top: 26px; }
+        .booking-history-panel { padding-top: 26px; scroll-margin-top: 5rem; }
         .booking-history-heading { margin-bottom: 17px; }
         .booking-history-heading h2 {
           margin: 0 0 8px;
@@ -97,7 +98,11 @@ export default function BookingHistoryTable({
         }
       `}</style>
 
-      <section className="booking-history-panel" aria-labelledby="booking-history-heading">
+      <section
+        className="booking-history-panel"
+        ref={historySectionRef}
+        aria-labelledby="booking-history-heading"
+      >
         <div className="booking-history-heading">
           <h2 id="booking-history-heading">Booking History</h2>
           <p>Table view of your past and upcoming bookings.</p>

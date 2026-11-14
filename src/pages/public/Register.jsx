@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthCard, Field, PrimaryButton } from "../../components/AuthCard";
 import { registerUser } from "../../api/authApi";
+import { useAuth } from "../../contexts/useAuth";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -11,6 +12,7 @@ export default function Register() {
   const [serverError, setServerError] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const { saveSession } = useAuth();
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -36,10 +38,17 @@ export default function Register() {
     setServerError("");
     try {
       const { name, email, tel, password } = form;
-      await registerUser({ name, email, tel, password, role: "member" });
-      navigate("/login", { state: { registered: true } });
+      const response = await registerUser({ name, email, tel, password, role: "member" });
+      const account = response?.data;
+      if (!account?.token || !account?.id || !account?.role) {
+        setServerError("Your account was created, but automatic sign in failed. Please log in.");
+        return;
+      }
+      const { token, ...user } = account;
+      saveSession(token, user);
+      navigate(user.role === "admin" ? "/admin/spots" : "/my-bookings", { replace: true });
     } catch (err) {
-      setServerError(err.response?.data?.message || "Could not create your account. Try again.");
+      setServerError(err.response?.data?.error || err.response?.data?.message || "Could not create your account. Try again.");
     } finally {
       setBusy(false);
     }

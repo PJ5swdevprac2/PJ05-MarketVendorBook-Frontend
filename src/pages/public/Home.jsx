@@ -1,28 +1,35 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SpotCard from "../../components/SpotCard";
 import { useAuth } from "../../contexts/useAuth";
-// import { getAllSpots } from "../../api/spotApi"; // switch on when Dev 2's spotApi is ready
-
-// Mock data (same shape as API: zone, spotSize, locationDescription, rentalFee)
-const MOCK_SPOTS = [
-  ["Riverside", "3m × 3m", "Near main walkway", 45], ["Riverside", "3m × 4m", "By riverside lights", 55],
-  ["Riverside", "4m × 4m", "Corner view of entrance", 75], ["Food Street", "3m × 3m", "Next to seating area", 50],
-  ["Food Street", "3m × 4m", "Mid-row, high foot traffic", 60], ["Food Street", "4m × 4m", "Close to stage sound zone", 80],
-  ["Arts Lane", "3m × 3m", "Near mural wall", 40], ["Arts Lane", "3m × 4m", "Alley-facing storefronts", 52],
-  ["Arts Lane", "4m × 4m", "Corner opposite craft booths", 70], ["Central Park", "3m × 3m", "Near event games area", 48],
-  ["Central Park", "3m × 4m", "Adjacent to restrooms", 58], ["Central Park", "4m × 4m", "Main crossing lane", 78],
-].map(([zone, spotSize, locationDescription, rentalFee], i) => ({
-  _id: `mock-${i + 1}`, zone, spotSize, locationDescription, rentalFee,
-}));
+import { getAllSpots } from "../../api/spotApi";
 
 export default function Home() {
-  const spots = MOCK_SPOTS;
+  const [spots, setSpots] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    let active = true;
+    getAllSpots()
+      .then((data) => {
+        if (active) setSpots(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        if (active) setError(err.response?.data?.error || "Unable to load spots right now.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
+
   const handleBook = (spot) => {
+    const spotId = spot._id ?? spot.id;
     if (!user) return navigate("/login", { state: { from: "/my-bookings" } });
-    navigate("/my-bookings", { state: { spotId: spot._id } });
+    navigate("/my-bookings", { state: { spotId } });
   };
 
   return (
@@ -65,11 +72,15 @@ export default function Home() {
       </section>
 
       <section id="zones" className="mx-auto max-w-6xl px-4 py-14">
-        {spots.length === 0 ? (
+        {loading ? (
+          <p className="text-center text-slate-500">Loading available spots…</p>
+        ) : error ? (
+          <p className="text-center text-red-600">{error}</p>
+        ) : spots.length === 0 ? (
           <p className="text-center text-slate-500">No spots are open for booking right now. Check back soon.</p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {spots.map((s, i) => <SpotCard key={s._id} spot={s} index={i} onBook={handleBook} />)}
+            {spots.map((s, i) => <SpotCard key={s._id ?? s.id} spot={s} index={i} onBook={handleBook} />)}
           </div>
         )}
       </section>

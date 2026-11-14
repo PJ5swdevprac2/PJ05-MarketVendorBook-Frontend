@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { logoutUser } from "../api/authApi";
 import { useAuth } from "../contexts/useAuth";
 
 const links = [
@@ -11,13 +13,26 @@ const links = [
 export default function Navbar() {
   const { user, clearSession } = useAuth();
   const navigate = useNavigate();
+  const [logoutError, setLogoutError] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
+  const roleLabel = user?.role === "admin" ? "Admin account" : "User account";
 
-  const logout = () => {
-    clearSession();
-    navigate("/");
+  const logout = async () => {
+    setLogoutError("");
+    setLoggingOut(true);
+    try {
+      await logoutUser();
+    } catch {
+      setLogoutError("You’re signed out on this device, but we couldn’t confirm logout with the server. Close the browser if this is a shared device.");
+    } finally {
+      clearSession();
+      navigate("/");
+      setLoggingOut(false);
+    }
   };
 
   return (
+    <>
     <header className="sticky top-0 z-30 border-b border-gray-100 bg-white shadow-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-3">
@@ -45,9 +60,24 @@ export default function Navbar() {
               >
                 {user.role === "admin" ? "Admin" : "My Bookings"}
               </NavLink>
+              <span
+                className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+                  user.role === "admin"
+                    ? "bg-violet-100 text-violet-800"
+                    : "bg-slate-100 text-slate-700"
+                }`}
+                aria-label={`Current role: ${roleLabel}`}
+              >
+                {roleLabel}
+              </span>
               <span className="hidden text-sm text-slate-500 sm:inline">{user.name}</span>
-              <button onClick={logout} className="h-9 rounded-md border border-gray-300 bg-white px-4 text-sm font-medium text-black hover:bg-gray-50">
-                Log out
+              <button
+                type="button"
+                onClick={logout}
+                disabled={loggingOut}
+                className="h-10 shrink-0 whitespace-nowrap rounded-md border border-gray-300 bg-white px-4 text-base font-medium text-black hover:bg-gray-50 disabled:cursor-wait disabled:opacity-60"
+              >
+                {loggingOut ? "Logging out…" : "Log out"}
               </button>
             </>
           ) : (
@@ -58,5 +88,11 @@ export default function Navbar() {
         </div>
       </div>
     </header>
+    {logoutError && (
+      <p className="mx-auto max-w-6xl px-4 py-2 text-sm text-red-700" role="alert">
+        {logoutError}
+      </p>
+    )}
+    </>
   );
 }

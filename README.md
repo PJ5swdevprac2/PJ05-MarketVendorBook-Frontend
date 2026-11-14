@@ -12,10 +12,11 @@ spots and bookings. It is built with **React**, **Vite**, **Tailwind CSS**, and
 - Node.js 20.19+ or 22.12+ and npm.
 - Run the PJ05 Backend API at `http://localhost:5000`. The frontend API base
   URL is `http://localhost:5000/api/v1`.
-- The backend's default CORS origin (`FRONTEND_URL`) is
-  `http://localhost:3000`; run the frontend on port 3000.
+- The backend allows `http://localhost:3000` in development; its production
+  origin is configured with `FRONTEND_URL`.
 - Protected API requests use `Authorization: Bearer <token>`. The frontend
-  stores the JWT in `localStorage`; backend authentication does not use cookies.
+  stores the JWT in `localStorage`; bearer tokens, not cookies, authenticate
+  protected API requests. Logout also calls the backend to clear its cookie.
 
 ## Installation & Running
 
@@ -23,23 +24,25 @@ From the frontend project directory:
 
 ```bash
 npm install
-npm run dev -- --port 3000
+npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The extra `--port 3000`
-ensures Vite uses the origin allowed by the backend. Running `npm run dev`
-without a port option uses Vite's default port, which may not match the
-backend's CORS configuration.
+Open [http://localhost:3000](http://localhost:3000). Vite is configured to use
+the origin allowed by the backend and will stop with an error if that port is
+already occupied rather than silently switching to a CORS-blocked port.
 
 ## Key Features & Roles
 
 ### Public / Auth
 
-- Register and log in as a member or admin.
-- Logout clears the local authentication state and stored bearer token.
-- Browse vendor spots on the Home page. The current Home page displays sample
-  spot data; the public `GET /api/v1/spots` endpoint and `spotApi` service
-  provide access to active backend spots.
+- Public registration creates User/member accounts. Admin accounts are created
+  with the backend's one-time setup command.
+- Successful registration stores the returned token and signs the new user in.
+- The navigation bar shows the role of the currently logged-in account.
+- Logout asks the backend to clear its cookie, then clears the local account
+  state and bearer token.
+- Browse active backend vendor spots on the Home page through
+  `GET /api/v1/spots`.
 
 ### Member — `/my-bookings`
 

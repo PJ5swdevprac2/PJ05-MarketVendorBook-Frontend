@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+// VITE_API_BASE_URL includes /api/v1 (e.g. http://localhost:5000/api/v1)
+// so endpoints below are written WITHOUT the prefix: '/auth/login', '/spots', '/bookings'
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:5000/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -19,7 +21,8 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const isLoginRequest = error.config?.url?.includes('/auth/login');
-    if (error.response?.status === 401 && !isLoginRequest) {
+    const isLogoutRequest = error.config?.url?.includes('/auth/logout');
+    if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       if (window.location.pathname !== '/login') {

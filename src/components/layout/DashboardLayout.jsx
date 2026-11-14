@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../contexts/useAuth';
 
 const navigationItems = [
   { label: 'Home', to: '/', icon: 'home' },
-  { label: 'My Bookings', to: '/my-bookings', icon: 'booking' },
-  { label: 'Manage Spots', to: '/admin/spots', icon: 'spot' },
-  { label: 'Manage Bookings', to: '/admin/bookings', icon: 'manage' },
+  { label: 'My Bookings', to: '/my-bookings', icon: 'booking', requiresAuth: true },
+  { label: 'Manage Spots', to: '/admin/spots', icon: 'spot', adminOnly: true },
+  { label: 'Manage Bookings', to: '/admin/bookings', icon: 'manage', adminOnly: true },
 ];
 
 function NavigationIcon({ name }) {
@@ -52,6 +53,12 @@ function NavigationIcon({ name }) {
 }
 
 export default function DashboardLayout({ children }) {
+  const { user } = useAuth();
+  const visibleNavigationItems = navigationItems.filter((item) => (
+    (!item.requiresAuth || user)
+    && (!item.adminOnly || user?.role === 'admin')
+  ));
+
   return (
     <>
       <style>{`
@@ -163,7 +170,7 @@ export default function DashboardLayout({ children }) {
             <span>Night Market</span>
           </div>
           <nav className="dashboard-nav" aria-label="Dashboard navigation">
-            {navigationItems.map((item) => (
+            {visibleNavigationItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
