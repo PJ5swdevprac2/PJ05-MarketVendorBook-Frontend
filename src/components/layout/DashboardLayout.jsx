@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/useAuth';
 
 const navigationItems = [
   { label: 'Home', to: '/', icon: 'home' },
-  { label: 'My Bookings', to: '/my-bookings', icon: 'booking', requiresAuth: true },
+  { label: 'My Bookings', to: '/my-bookings', icon: 'booking', requiresAuth: true, memberOnly: true },
   { label: 'Manage Spots', to: '/admin/spots', icon: 'spot', adminOnly: true },
   { label: 'Manage Bookings', to: '/admin/bookings', icon: 'manage', adminOnly: true },
 ];
@@ -57,6 +57,7 @@ export default function DashboardLayout({ children }) {
   const visibleNavigationItems = navigationItems.filter((item) => (
     (!item.requiresAuth || user)
     && (!item.adminOnly || user?.role === 'admin')
+    && (!item.memberOnly || user?.role !== 'admin')
   ));
 
   return (
