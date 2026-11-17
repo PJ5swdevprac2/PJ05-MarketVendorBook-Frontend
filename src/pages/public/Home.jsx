@@ -35,7 +35,10 @@ export default function Home() {
   return (
     <>
       <section className="bg-neutral-600 px-4 py-16 text-center text-white">
-        <h1 className="mx-auto max-w-xl text-3xl font-semibold leading-tight sm:text-4xl">
+        <h1
+          className="mx-auto w-full max-w-xl text-center text-3xl font-semibold leading-tight sm:text-4xl"
+          style={{ color: "#fff", textAlign: "center", margin: "0 auto" }}
+        >
           Book your night market spot in minutes
         </h1>
         <p className="mt-4 text-sm text-gray-200">Choose an available spot, review details, and reserve instantly.</p>

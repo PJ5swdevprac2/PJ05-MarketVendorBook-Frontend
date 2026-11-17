@@ -15,7 +15,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [logoutError, setLogoutError] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
-  const roleLabel = user?.role === "admin" ? "Admin account" : "User account";
+  const roleLabel = user?.role === "admin" ? "Admin" : "User";
 
   const logout = async () => {
     setLogoutError("");
