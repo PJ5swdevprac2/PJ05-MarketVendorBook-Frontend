@@ -76,7 +76,7 @@ export default function Navbar() {
               >
                 {roleLabel}
               </span>
-              <span className="hidden shrink-0 text-sm text-slate-500 xl:inline" title={user.name}>{displayName}</span>
+              <span className="hidden shrink-0 text-sm text-slate-500 sm:inline" title={user.name}>{displayName}</span>
               <button
                 type="button"
                 onClick={logout}
