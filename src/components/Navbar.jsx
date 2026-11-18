@@ -46,7 +46,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="flex shrink-0 items-center gap-2 whitespace-nowrap xl:gap-3">
+        <div className="flex shrink-0 items-center gap-2 whitespace-nowrap lg:mr-4 xl:gap-3">
           <form onSubmit={submitSearch} role="search" className="hidden shrink-0 md:block">
             <input
               key={searchParams.get("q") || ""}
@@ -67,16 +67,14 @@ export default function Navbar() {
                 {user.role === "admin" ? "Admin" : "My Bookings"}
               </NavLink>
               <span
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                  user.role === "admin"
-                    ? "bg-violet-100 text-violet-800"
-                    : "bg-slate-100 text-slate-700"
-                }`}
+                className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700"
                 aria-label={`Current role: ${roleLabel}`}
               >
                 {roleLabel}
               </span>
-              <span className="hidden shrink-0 text-sm text-slate-500 sm:inline" title={user.name}>{displayName}</span>
+              {user.role !== "admin" && (
+                <span className="hidden shrink-0 text-sm text-slate-500 sm:inline" title={user.name}>{displayName}</span>
+              )}
               <button
                 type="button"
                 onClick={logout}
