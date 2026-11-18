@@ -127,7 +127,17 @@ export default function Register() {
       saveSession(token, user);
       navigate(user.role === "admin" ? "/admin/spots" : "/my-bookings", { replace: true });
     } catch (err) {
-      setServerError(err.response?.data?.error || err.response?.data?.message || "Could not create your account. Try again.");
+      const responseMessage = err.response?.data?.error || err.response?.data?.message;
+      const duplicateEmail = typeof responseMessage === "string"
+        && /duplicate key.*\bemail(?:_\d+)?\b/i.test(responseMessage);
+
+      setServerError(
+        duplicateEmail
+          ? "This email has already been used."
+          : typeof responseMessage === "string" && responseMessage
+            ? responseMessage
+            : "Could not create your account. Try again.",
+      );
     } finally {
       setBusy(false);
     }
