@@ -3,13 +3,6 @@ import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { logoutUser } from "../api/authApi";
 import { useAuth } from "../contexts/useAuth";
 
-const links = [
-  { label: "Spots", href: "/#spots" },
-  { label: "Zones", href: "/#zones" },
-  { label: "Pricing", href: "/#spots" },
-  { label: "How It Works", href: "/#how" },
-];
-
 export default function Navbar() {
   const { user, clearSession } = useAuth();
   const navigate = useNavigate();
@@ -17,6 +10,9 @@ export default function Navbar() {
   const [logoutError, setLogoutError] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
   const roleLabel = user?.role === "admin" ? "Admin" : "User";
+  const displayName = user?.name
+    ? (user.name.length > 5 ? `${user.name.slice(0, 5)}..` : user.name)
+    : "";
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -42,22 +38,16 @@ export default function Navbar() {
   return (
     <>
     <header className="sticky top-0 z-30 border-b border-gray-100 bg-white shadow-sm">
-      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 px-4 py-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-        <Link to="/" className="flex min-w-0 shrink-0 items-center gap-2 xl:gap-3">
+      <div className="mx-auto flex h-16 min-w-0 max-w-7xl items-center justify-between gap-3 px-4">
+        <Link to="/" className="flex min-w-0 flex-1 items-center gap-2 xl:gap-3">
           <span className="h-9 w-9 rounded-full bg-gray-200" aria-hidden />
-          <span className="hidden whitespace-nowrap text-sm font-semibold leading-tight tracking-tight text-black sm:inline md:text-base xl:text-lg">
+          <span className="hidden min-w-0 truncate whitespace-nowrap text-sm font-semibold leading-tight tracking-tight text-black sm:inline md:text-base xl:text-lg">
             Night Market Vendor Spot Booking
           </span>
         </Link>
 
-        <nav className="hidden items-center justify-center gap-4 text-sm font-medium text-black md:col-start-2 md:row-start-1 md:flex xl:gap-6">
-          {links.map((l) => (
-            <a key={l.label} href={l.href} className="hover:underline">{l.label}</a>
-          ))}
-        </nav>
-
-        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 md:col-start-3 md:row-start-1 xl:gap-3">
-          <form onSubmit={submitSearch} role="search" className="hidden md:block">
+        <div className="flex shrink-0 items-center gap-2 whitespace-nowrap xl:gap-3">
+          <form onSubmit={submitSearch} role="search" className="hidden shrink-0 md:block">
             <input
               key={searchParams.get("q") || ""}
               type="search"
@@ -65,14 +55,14 @@ export default function Navbar() {
               aria-label="Search spots by number"
               placeholder="Search in site"
               defaultValue={searchParams.get("q") || ""}
-              className="h-9 w-44 rounded-md border border-gray-200 px-3 text-sm placeholder:text-gray-400 focus:border-black focus:outline-none"
+              className="h-9 w-36 rounded-md border border-gray-200 px-3 text-sm placeholder:text-gray-400 focus:border-black focus:outline-none lg:w-44"
             />
           </form>
           {user ? (
             <>
               <NavLink
                 to={user.role === "admin" ? "/admin/spots" : "/my-bookings"}
-                className="text-sm font-medium text-black hover:underline"
+                className="shrink-0 text-sm font-medium text-black hover:underline"
               >
                 {user.role === "admin" ? "Admin" : "My Bookings"}
               </NavLink>
@@ -86,7 +76,7 @@ export default function Navbar() {
               >
                 {roleLabel}
               </span>
-              <span className="hidden max-w-32 truncate text-sm text-slate-500 xl:inline">{user.name}</span>
+              <span className="hidden shrink-0 text-sm text-slate-500 xl:inline" title={user.name}>{displayName}</span>
               <button
                 type="button"
                 onClick={logout}
